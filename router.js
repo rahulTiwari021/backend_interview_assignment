@@ -1,7 +1,10 @@
 const express = require('express');
-const routes = express.Router();
+const jwt = require('jsonwebtoken');
 const { request } = require('graphql-request');
+const { auth } = require('./auth-middleware');
+const routes = express.Router();
 
+const secretKey = process.env.SECRET_KEY || 'mysecretkey';
 const API_URL = 'http://localhost:8080/v1/graphql';
   
 
@@ -9,7 +12,13 @@ routes.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
-routes.post('/get-users', async (req, res) => {
+routes.post('/login', (req, res) => {
+    // TODO implement user verification. Keeping static now as there is no unique email or mobile and password to login and verify
+    const token = jwt.sign({ username: 'rahul' }, secretKey);
+    res.send({ token });
+});
+
+routes.post('/get-users', auth,  async (req, res) => {
     const { page_size, page_number } = req.body;
     const limit = page_size;
     const offset = page_number * page_size;
@@ -32,7 +41,7 @@ routes.post('/get-users', async (req, res) => {
     }
 });
 
-routes.post('/find-nearby-users', async (req, res) => {
+routes.post('/find-nearby-users', auth, async (req, res) => {
     const { user_id, distance_kms } = req.body;
     try {
         const query = `query {
