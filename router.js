@@ -40,10 +40,9 @@ routes.post('/find-nearby-users', auth, async (req, res) => {
 
         const formattedResponse = result.map(item => {
             return {
-                first_name: item.first_name,
-                last_name: item.last_name,
+                firstName: item.first_name,
+                lastName: item.last_name,
                 gender: item.gender,
-                user_id: item.user_id,
                 location: {
                     lat: item.lat,
                     lng: item.lng
